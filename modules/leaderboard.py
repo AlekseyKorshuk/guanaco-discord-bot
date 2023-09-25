@@ -9,8 +9,9 @@ from chai_guanaco.utils import cache
 
 import config
 
-NUM_ROWS = 14
+NUM_ROWS = 25
 LAST_MESSAGE_ID = None
+INTERNAL_CHAI_USERS = ['alex', 'aleksey', 'duy', 'zonemercy', 'xl402', 'ebony', 'end_to_end_test']
 
 
 def attach_leaderboard_module(bot: discord.ext.commands.Bot):
@@ -92,13 +93,15 @@ def _create_embed(filename):
 def _get_grand_prize(df):
     df = df.sort_values(['overall_rank', 'developer_uid', 'model_name']).reset_index(drop=True)
     df = metrics._get_df_with_unique_dev_id(df)
+    df = df[~df['developer_uid'].isin(INTERNAL_CHAI_USERS)]
     html = get_html_leaderboard(df.round(3).head(NUM_ROWS), 'Grand Prize Contenders')
-    image_path = save_html_as_image(html, image_path="grand_prize.png", size=(1400, 1000))
+    image_path = save_html_as_image(html, image_path="grand_prize.png", size=(1350, 1700))
     return image_path
 
 
 def _get_detailed_grand_prize(df):
     df = df.sort_values(['overall_rank', 'developer_uid', 'model_name']).reset_index(drop=True)
+    df = df[~df['developer_uid'].isin(INTERNAL_CHAI_USERS)]
     html = get_html_leaderboard(df.round(3).head(35), 'Detailed Leaderboard by Model')
     image_path = save_html_as_image(html, image_path="detailed.png", size=(1400, 2000))
     return image_path
@@ -225,6 +228,7 @@ def _get_column_names():
         "thumbs_up_ratio": "Thumbs Up",
         "user_engagement": "User Engagement",
         "retry_score": "Retry Score",
+        "repetition": "Repetition",
         "total_feedback_count": "Total Feedback Count",
         "overall_rank": "Overall Rank"
     }
